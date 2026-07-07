@@ -8,7 +8,7 @@
 use std::ops::Deref;
 use std::time::Instant;
 
-use mp3lame_encoder::{Bitrate, Builder, DualPcm, FlushNoGap, Mode, Quality, VbrMode};
+use mp3lame_encoder::{Bitrate, Builder, FlushNoGap, Mode, MonoPcm, Quality, VbrMode};
 use pcm::PCM;
 use time::Duration;
 use tracing::info;
@@ -175,7 +175,15 @@ fn encode_inner(pcm: &PCM, tag: Id3Tag) -> Result<(MP3, Duration, Duration), Err
 
     let now = Instant::now();
 
-    let pcm_samples = pcm.i16_samples();
+    let bytes = pcm.as_ref();
+    let pcm_samples_vec;
+    let pcm_samples: &[i16] =
+        if cfg!(target_endian = "little") && (bytes.as_ptr() as usize) % 2 == 0 {
+            unsafe { std::slice::from_raw_parts(bytes.as_ptr() as *const i16, bytes.len() / 2) }
+        } else {
+            pcm_samples_vec = pcm.i16_samples();
+            &pcm_samples_vec
+        };
 
     let mut builder = Builder::new().expect("Failed to allocate MP3 encoder builder");
     builder.set_num_channels(1)?;
@@ -189,13 +197,10 @@ fn encode_inner(pcm: &PCM, tag: Id3Tag) -> Result<(MP3, Duration, Duration), Err
     let mut encoder = builder.build()?;
     let builder_elapsed = now.elapsed();
 
-    let input = DualPcm {
-        left: pcm_samples.as_slice(),
-        right: pcm_samples.as_slice(),
-    };
+    let input = MonoPcm(pcm_samples);
 
     let mut mp3_out =
-        Vec::with_capacity(mp3lame_encoder::max_required_buffer_size(input.left.len()));
+        Vec::with_capacity(mp3lame_encoder::max_required_buffer_size(pcm_samples.len()));
 
     let written = encoder.encode(input, mp3_out.spare_capacity_mut())?;
     unsafe { mp3_out.set_len(mp3_out.len().wrapping_add(written)) };
