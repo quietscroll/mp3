@@ -106,7 +106,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 [[package]]
 name = "pcm"
 version = "0.1.0"
-source = "git+https://github.com/quietscroll/pcm#513af859d8441c8ab2dadcdc63e0d96900500dd0"
+source = "git+https://github.com/quietscroll/pcm#84562d4824c565ed47279fcecbe08de8bdfd0068"
 dependencies = [
  "thiserror",
  "time",

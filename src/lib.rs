@@ -175,15 +175,13 @@ fn encode_inner(pcm: &PCM, tag: Id3Tag) -> Result<(MP3, Duration, Duration), Err
 
     let now = Instant::now();
 
-    let bytes = pcm.as_ref();
     let pcm_samples_vec;
-    let pcm_samples: &[i16] =
-        if cfg!(target_endian = "little") && (bytes.as_ptr() as usize) % 2 == 0 {
-            unsafe { std::slice::from_raw_parts(bytes.as_ptr() as *const i16, bytes.len() / 2) }
-        } else {
-            pcm_samples_vec = pcm.i16_samples();
-            &pcm_samples_vec
-        };
+    let pcm_samples: &[i16] = if let Some(samples) = pcm.as_i16_samples() {
+        samples
+    } else {
+        pcm_samples_vec = pcm.i16_samples();
+        &pcm_samples_vec
+    };
 
     let mut builder = Builder::new().expect("Failed to allocate MP3 encoder builder");
     builder.set_num_channels(1)?;
