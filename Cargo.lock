@@ -106,10 +106,11 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 [[package]]
 name = "pcm"
 version = "0.1.0"
-source = "git+https://github.com/quietscroll/pcm#3308e5e2ffe862917526533025c000f8acfce676"
+source = "git+https://github.com/quietscroll/pcm#2eba1ccc5ef00b6987e8e85c430d258ea9cb9818"
 dependencies = [
  "thiserror",
  "time",
+ "wsola",
 ]
 
 [[package]]
@@ -276,6 +277,15 @@ name = "unicode-ident"
 version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75"
+
+[[package]]
+name = "wsola"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "542a5d4e1f44b1af2eeef27a918d15d117ce326af641153efbfe436b586418f5"
+dependencies = [
+ "thiserror",
+]
 
 [[package]]
 name = "zmij"
